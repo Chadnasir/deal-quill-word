@@ -54,12 +54,70 @@ var parties = [];
   }
 
   function setStatus(ok, title) {
-    var dot = document.getElementById("bridge-status");
-    if (!dot) return;
-    dot.classList.remove("ok", "err");
-    if (ok === true) dot.classList.add("ok");
-    else if (ok === false) dot.classList.add("err");
-    if (title) dot.title = title;
+    var pill = document.getElementById("bridge-status");
+    if (!pill) return;
+    pill.classList.remove("ok", "err");
+    var label = document.getElementById("bridge-status-label") || pill.querySelector(".status-pill-label");
+    if (ok === true) {
+      pill.classList.add("ok");
+      if (label) label.textContent = "Connected";
+    } else if (ok === false) {
+      pill.classList.add("err");
+      if (label) label.textContent = "Offline";
+    } else if (label) {
+      label.textContent = "Bridge";
+    }
+    if (title) pill.title = title;
+  }
+
+  function showToast(message, kind) {
+    var msg = message == null ? "" : String(message);
+    var toast = document.getElementById("dq-toast");
+    if (toast) {
+      toast.textContent = msg;
+      toast.classList.remove("is-success", "is-visible");
+      if (kind === "success") toast.classList.add("is-success");
+      toast.hidden = false;
+      void toast.offsetWidth;
+      toast.classList.add("is-visible");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(function () {
+        toast.classList.remove("is-visible");
+        setTimeout(function () { toast.hidden = true; }, 160);
+      }, 2200);
+      return;
+    }
+    var flash = document.getElementById("apply-flash");
+    if (!flash) return;
+    flash.textContent = msg || "Applied";
+    flash.hidden = false;
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function () { flash.hidden = true; }, 1800);
+  }
+
+  function flashOk(btn) {
+    if (!btn) return;
+    btn.classList.remove("flash-ok");
+    void btn.offsetWidth;
+    btn.classList.add("flash-ok");
+    setTimeout(function () { btn.classList.remove("flash-ok"); }, 600);
+  }
+
+  function setAiLoading(on, which) {
+    var ids = which === "ask" ? ["btn-ask"] : which === "suggest" ? ["btn-suggest"] : ["btn-suggest", "btn-ask"];
+    ids.forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) {
+        if (on) b.classList.add("is-loading");
+        else b.classList.remove("is-loading");
+        b.disabled = !!on;
+        b.setAttribute("aria-busy", on ? "true" : "false");
+      }
+    });
+    var load = document.getElementById("ai-loading");
+    if (load) load.hidden = !on;
+    var panel = document.getElementById("ai-panel");
+    if (panel) panel.classList.toggle("is-ai-loading", !!on);
   }
 
   function readDocumentText(callback) {
