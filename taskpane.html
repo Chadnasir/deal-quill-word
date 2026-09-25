@@ -1,5 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><title>Deal Quill Test</title></head>
-<body>ok</body>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deal Quill</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="taskpane.css" />
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+</head>
+<body>
+  <header class="dq-header" role="banner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">DQ</div>
+      <div class="brand-text">
+        <h1>Deal Quill</h1>
+        <p class="tagline">RealEstateCA · CRE</p>
+      </div>
+    </div>
+    <span class="status-pill" id="bridge-status" role="status" aria-live="polite" title="Bridge status">
+      <span class="status-pill-dot" aria-hidden="true"></span>
+      <span class="status-pill-label" id="bridge-status-label">Offline</span>
+    </span>
+  </header>
+
+  <p class="disclaimer">
+    <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Demo — not legal advice. AI suggestions are prompts you drive; review before applying.
+  </p>
+
+  <main class="dq-main">
+    <section class="panel" id="parties-panel">
+      <div class="panel-head">
+        <h2>
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="5.5" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="10.5" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13c.4-2.2 2-3.5 4-3.5s3.6 1.3 4 3.5M8.5 9.5c1.2-.4 2.6-.2 3.5.5.7.6 1.2 1.5 1.5 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Parties
+        </h2>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-refresh-parties">Refresh</button>
+      </div>
+      <p class="hint" id="parties-hint">Detected from document text. Label roles and names, then save.</p>
+      <div id="parties-list" class="parties-list" aria-live="polite"></div>
+      <button type="button" class="btn btn-ghost btn-sm btn-add" id="btn-add-party">
+        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Add party
+      </button>
+    </section>
+
+    <section class="panel panel-hero" id="edit-panel">
+      <div class="panel-head">
+        <h2>
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 12.5l.5-2.5L11.2 2.3a1.2 1.2 0 011.7 1.7L5.2 11.7 3 12.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.5 3.5l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Edit selection
+        </h2>
+      </div>
+      <p class="hint">Acts on current selection, or whole document if nothing is selected.</p>
+      <div class="btn-row">
+        <button type="button" class="btn btn-danger-outline" id="btn-strike">
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M4.5 5h7M5 11h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Strike out
+        </button>
+        <button type="button" class="btn btn-secondary" id="btn-redline">
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 12.5h4M3 10l7.5-7.5a1.2 1.2 0 011.7 1.7L4.7 11.7 3 12.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          Redline…
+        </button>
+      </div>
+      <label class="field-label" for="redline-text">Redline replacement</label>
+      <textarea id="redline-text" rows="2" placeholder="Suggested replacement text…"></textarea>
+    </section>
+
+    <section class="panel panel-hero" id="ai-panel">
+      <div class="panel-head">
+        <h2>
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l.9 2.7L11.5 6l-2.6.9L8 9.5l-.9-2.6L4.5 6l2.6-.8L8 2.5zM12.5 9l.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5L10.5 11l1.5-.5.5-1.5zM3.5 10.5l.4 1.1 1.1.4-1.1.4-.4 1.1-.4-1.1-1.1-.4 1.1-.4.4-1.1z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Ask AI
+        </h2>
+      </div>
+      <label class="field-label" for="ai-prompt">Your prompt (drives behavior — no hardcoded playbooks)</label>
+      <textarea id="ai-prompt" rows="3" placeholder="Ask AI to… e.g. Suggest a clearer indemnity clause for the tenant"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" id="btn-suggest">
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l.9 2.7L11.5 6l-2.6.9L8 9.5l-.9-2.6L4.5 6l2.6-.8L8 2.5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          Give suggestions
+        </button>
+        <button type="button" class="btn btn-ghost" id="btn-ask">Ask AI</button>
+      </div>
+      <p class="ai-loading" id="ai-loading" hidden role="status">Calling local bridge…</p>
+      <label class="field-label" for="ai-result">Suggestion</label>
+      <textarea id="ai-result" rows="5" readonly placeholder="AI response appears here…"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" id="btn-apply-insert" disabled>Apply (insert)</button>
+        <button type="button" class="btn btn-secondary" id="btn-apply-redline" disabled>Apply (redline)</button>
+      </div>
+    </section>
+
+    <details class="panel panel-bridge" id="bridge-panel">
+      <summary class="bridge-summary">
+        <span class="bridge-summary-left">
+          <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 8a3.5 3.5 0 015.2-3.05M11.5 8a3.5 3.5 0 01-5.2 3.05M6 8h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Grok bridge
+        </span>
+        <span class="bridge-summary-hint">Local only · tokens stay here</span>
+      </summary>
+      <div class="bridge-body">
+        <label class="field-label" for="bridge-url">Grok bridge URL</label>
+        <input type="text" id="bridge-url" value="http://127.0.0.1:8787" />
+        <label class="field-label" for="bridge-token">Bridge token (local secret)</label>
+        <input type="password" id="bridge-token" autocomplete="off" placeholder="Paste DEAL_QUILL_BRIDGE_TOKEN from bridge/.env.local" />
+        <p class="hint">API keys stay on the bridge — never in this add-in. Token stored in Office storage / localStorage only.</p>
+      </div>
+    </details>
+  </main>
+
+  <div class="dq-toast" id="dq-toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="party-detect.js"></script>
+  <script src="grok-client.js"></script>
+  <script src="taskpane-a.js"></script>
+  <script src="taskpane-b.js"></script>
+</body>
 </html>
