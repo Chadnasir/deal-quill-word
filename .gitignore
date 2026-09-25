@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+bridge/.env
+bridge/.env.local
+*.pem
+*.key
+keys/
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/

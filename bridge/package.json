@@ -1,0 +1,14 @@
+{
+  "name": "deal-quill-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local Grok/xAI bridge for Deal Quill Word add-in (127.0.0.1 only)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "health": "curl -s http://127.0.0.1:8787/health"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
