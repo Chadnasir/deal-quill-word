@@ -31,6 +31,29 @@
     Demo — not legal advice. AI suggestions are prompts you drive; review before applying.
   </p>
 
+  <section class="panel onboarding-panel" id="first-run-checklist" aria-labelledby="first-run-title">
+    <div class="panel-head">
+      <h2 id="first-run-title"><span class="checklist-badge" aria-hidden="true">✓</span> First run</h2>
+      <button type="button" class="btn btn-ghost btn-sm checklist-dismiss" id="btn-dismiss-checklist">Dismiss</button>
+    </div>
+    <p class="hint">Three quick moves to get from document to confident review.</p>
+    <ol class="checklist" aria-label="Deal Quill first-run checklist">
+      <li data-checklist-step="bridge" class="checklist-step-bridge">
+        <span class="checklist-box" aria-hidden="true">1</span>
+        <span class="checklist-step-body">
+          <strong>Set the bridge token once</strong>
+          <small>Use the token from <code>bridge/.env.local</code>. Paste it here — no need to hunt in Bridge settings.</small>
+          <div class="checklist-inline-token" id="checklist-inline-token">
+            <label class="field-label" for="bridge-token-inline">Bridge token (local secret)</label>
+            <input type="password" id="bridge-token-inline" autocomplete="off" placeholder="Paste DEAL_QUILL_BRIDGE_TOKEN from bridge/.env.local" />
+          </div>
+        </span>
+      </li>
+      <li data-checklist-step="selection"><span class="checklist-box" aria-hidden="true">2</span><span><strong>Select a clause</strong><small>Highlight the language you want to review.</small></span></li>
+      <li data-checklist-step="action"><span class="checklist-box" aria-hidden="true">3</span><span><strong>Strike or ask AI</strong><small>Choose an edit action, then review before applying.</small></span></li>
+    </ol>
+  </section>
+
   <main class="dq-main">
     <section class="panel" id="parties-panel">
       <div class="panel-head">
@@ -56,6 +79,11 @@
         </h2>
       </div>
       <p class="hint">Acts on current selection, or whole document if nothing is selected.</p>
+      <div class="dq-empty-state document-empty-state" id="document-empty-state" hidden role="status">
+        <div class="empty-state-icon" aria-hidden="true">✦</div>
+        <div><strong>Before you review</strong><p>Paste or select contract text, then Run suggest — or Ask AI what to change.</p></div>
+        <div class="empty-state-actions"><button type="button" class="btn btn-primary btn-sm" id="btn-focus-ask">Focus Ask box</button><button type="button" class="btn btn-ghost btn-sm" id="btn-load-demo">Load demo prompt</button></div>
+      </div>
       <div class="btn-row">
         <button type="button" class="btn btn-danger-outline" id="btn-strike">
           <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M4.5 5h7M5 11h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -104,6 +132,11 @@
         <span class="bridge-summary-hint">Local only · tokens stay here</span>
       </summary>
       <div class="bridge-body">
+        <div class="dq-empty-state bridge-empty-state" id="bridge-empty-state" hidden role="alert">
+          <div class="empty-state-icon" aria-hidden="true">!</div>
+          <div><strong>Bridge offline</strong><p>Start the local bridge to send suggestions. Your document stays in Word.</p></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-open-bridge">Open bridge settings</button>
+        </div>
         <label class="field-label" for="bridge-url">Grok bridge URL</label>
         <input type="text" id="bridge-url" value="http://127.0.0.1:8787" />
         <label class="field-label" for="bridge-token">Bridge token (local secret)</label>
