@@ -147,13 +147,15 @@ python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
 manifest.xml
 taskpane.html
 taskpane.css
-taskpane.js
+taskpane.js          # thin loader (or use a+b)
+taskpane-a.js
+taskpane-b.js
 party-detect.js
 grok-client.js
 bridge/server.js
 bridge/package.json
 bridge/.env.example
-assets/icon-32.png
+assets/icon.svg
 README.md
 .gitignore
 ```
