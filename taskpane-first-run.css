@@ -1,0 +1,143 @@
+/* ——— Smart empty states + first-run onboarding ——— */
+.onboarding-panel {
+  margin: calc(var(--space) * 1.5) calc(var(--space) * 1.5) 0;
+  border-color: #c9d4e5;
+  background: linear-gradient(135deg, #fff 0%, #fbfcfe 100%);
+}
+.onboarding-panel[hidden] { display: none; }
+.checklist-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--orange);
+  font-size: 0.7rem;
+}
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 7px;
+}
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  transition: border-color var(--trans), background var(--trans);
+}
+.checklist li.is-complete {
+  border-color: #a7dfc8;
+  background: var(--ok-soft);
+}
+.checklist-box {
+  display: grid;
+  place-items: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  color: var(--navy);
+  background: var(--navy-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.checklist li.is-complete .checklist-box { color: #fff; background: var(--ok); }
+.checklist strong { display: block; color: var(--navy); font-size: 0.74rem; }
+.checklist small { display: block; margin-top: 2px; color: var(--muted); font-size: 0.67rem; line-height: 1.35; }
+.checklist code { font-size: 0.65rem; }
+.checklist-step-body { flex: 1; min-width: 0; }
+.checklist-inline-token {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #d5deeb;
+}
+.checklist-inline-token[hidden] { display: none; }
+.checklist-inline-token .field-label { margin-top: 0; }
+.checklist-inline-token input {
+  width: 100%;
+  margin-top: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.72rem;
+  color: var(--navy);
+  background: #fff;
+}
+.checklist-inline-token input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-ring);
+}
+.checklist li.is-complete .checklist-inline-token { display: none; }
+.panel-bridge.is-first-run {
+  margin-top: calc(var(--space) * 1.25);
+  border-color: #c9d4e5;
+  background: var(--page);
+  box-shadow: 0 1px 0 rgba(11, 44, 95, 0.04);
+}
+.panel-bridge.is-first-run .bridge-summary {
+  border-color: #c9d4e5;
+  background: linear-gradient(135deg, #fff 0%, var(--orange-soft) 100%);
+  color: var(--navy);
+}
+.panel-bridge.is-first-run .bridge-summary-left .ico { color: var(--orange); }
+.panel-bridge.is-first-run .bridge-summary-hint { color: var(--navy-mid); opacity: 1; }
+.dq-empty-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid #c9d4e5;
+  border-left: 3px solid var(--orange);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #fff 0%, var(--orange-soft) 100%);
+  color: var(--navy);
+  font-size: 0.73rem;
+}
+.dq-empty-state[hidden] { display: none; }
+.dq-empty-state p { margin: 2px 0 0; color: var(--muted); line-height: 1.4; }
+.empty-state-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--orange);
+  background: #fff;
+  border: 1px solid #ffd6b3;
+  font-weight: 700;
+}
+.empty-state-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.document-empty-state { margin: 10px 0 2px; align-items: flex-start; }
+.compact { justify-content: flex-start; }
+.compact .empty-state-icon { flex-basis: 24px; width: 24px; height: 24px; }
+.parties-list > .dq-empty-state { min-height: 66px; justify-content: center; text-align: center; flex-direction: column; border-style: dashed; border-left-width: 1px; background: #fafbfd; }
+.parties-list > .dq-empty-state p { max-width: 240px; }
+.bridge-empty-state { margin: 4px 0 12px; align-items: flex-start; }
+.bridge-empty-state .btn { margin-left: auto; white-space: nowrap; }
+@media (max-width: 360px) {
+  .onboarding-panel { margin-left: var(--space); margin-right: var(--space); }
+  .document-empty-state { flex-wrap: wrap; }
+  .empty-state-actions { margin-left: 37px; }
+  .bridge-empty-state { flex-wrap: wrap; }
+  .bridge-empty-state .btn { margin-left: 37px; }
+}
+
+
+/* First-run dismiss — never blocks power users */
+.onboarding-panel { position: relative; }
+.checklist-dismiss {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.onboarding-panel[hidden] { display: none !important; }
