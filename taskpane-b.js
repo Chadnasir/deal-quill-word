@@ -89,7 +89,8 @@
         alert("Could not read selection: " + (err.message || err));
         return;
       }
-      setSuggestion("…calling local bridge…");
+      setAiLoading(true, mode === "ask" ? "ask" : "suggest");
+      setSuggestion("");
       DealQuillGrok.complete({
         prompt: prompt,
         context: contextText,
@@ -99,9 +100,12 @@
         bridgeUrl: DealQuillGrok.getBridgeUrl()
       }).then(function (data) {
         var text = (data && (data.text || data.suggestion || data.content)) || "";
+        setAiLoading(false);
         setSuggestion(text);
         setStatus(true, "Bridge OK");
+        showToast(text ? "Suggestion ready" : "Empty response", "success");
       }).catch(function (e) {
+        setAiLoading(false);
         setSuggestion("");
         setStatus(false, e.message || "Bridge error");
         alert(e.message || String(e));
@@ -133,11 +137,22 @@
     var urlEl = document.getElementById("bridge-url");
     var tokEl = document.getElementById("bridge-token");
 
-    if (strike) strike.addEventListener("click", applyStrike);
+    if (strike) {
+      strike.addEventListener("click", function () {
+        applyStrike();
+        flashOk(strike);
+        showToast("Strike applied", "success");
+      });
+    }
     if (redline) {
       redline.addEventListener("click", function () {
         var t = document.getElementById("redline-text");
-        applyRedline(t ? t.value : "");
+        var val = t ? t.value : "";
+        applyRedline(val);
+        if (String(val || "").trim()) {
+          flashOk(redline);
+          showToast("Redline applied", "success");
+        }
       });
     }
     if (suggest) suggest.addEventListener("click", function () { runAi("suggest"); });
@@ -146,12 +161,16 @@
       applyIns.addEventListener("click", function () {
         var el = document.getElementById("ai-result");
         applyInsert(el ? el.value : "");
+        flashOk(applyIns);
+        showToast("Inserted into document", "success");
       });
     }
     if (applyRed) {
       applyRed.addEventListener("click", function () {
         var el = document.getElementById("ai-result");
         applyRedline(el ? el.value : "");
+        flashOk(applyRed);
+        showToast("Redline applied", "success");
       });
     }
     if (refresh) refresh.addEventListener("click", refreshParties);
