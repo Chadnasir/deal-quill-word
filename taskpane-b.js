@@ -3,9 +3,11 @@
     readDocumentText(function (err, text) {
       if (err) {
         console.warn(err);
+        updateDocumentEmptyState("");
         alert("Could not read document: " + (err.message || err));
         return;
       }
+      updateDocumentEmptyState(text);
       var detected = window.DealQuillPartyDetect
         ? DealQuillPartyDetect.detectParties(text)
         : [];
@@ -99,6 +101,7 @@
         token: token,
         bridgeUrl: DealQuillGrok.getBridgeUrl()
       }).then(function (data) {
+        markChecklistStep("action");
         var text = (data && (data.text || data.suggestion || data.content)) || "";
         setAiLoading(false);
         setSuggestion(text);
@@ -139,6 +142,7 @@
 
     if (strike) {
       strike.addEventListener("click", function () {
+        markChecklistStep("action");
         applyStrike();
         flashOk(strike);
         showToast("Strike applied", "success");
@@ -176,15 +180,65 @@
     if (refresh) refresh.addEventListener("click", refreshParties);
     if (addP) addP.addEventListener("click", addPartyManual);
 
+    var dismissChecklistBtn = document.getElementById("btn-dismiss-checklist");
+    if (dismissChecklistBtn) dismissChecklistBtn.addEventListener("click", function () {
+      dismissChecklist();
+    });
+
+    var focusAsk = document.getElementById("btn-focus-ask");
+    if (focusAsk) focusAsk.addEventListener("click", function () {
+      var prompt = document.getElementById("ai-prompt");
+      if (prompt) prompt.focus();
+    });
+    var loadDemo = document.getElementById("btn-load-demo");
+    if (loadDemo) loadDemo.addEventListener("click", function () {
+      var prompt = document.getElementById("ai-prompt");
+      if (prompt) {
+        prompt.value = "Suggest a clearer indemnity clause for the tenant";
+        prompt.focus();
+      }
+    });
+    var openBridge = document.getElementById("btn-open-bridge");
+    if (openBridge) openBridge.addEventListener("click", function () {
+      var panel = document.getElementById("bridge-panel");
+      if (panel) panel.open = true;
+      var url = document.getElementById("bridge-url");
+      if (url) url.focus();
+    });
+
     if (urlEl) {
       urlEl.addEventListener("change", function () {
         if (window.DealQuillGrok) DealQuillGrok.setBridgeUrl(urlEl.value.trim());
         pingBridge();
       });
     }
+    function onBridgeTokenCommit(raw) {
+      var token = String(raw || "").trim();
+      syncBridgeTokenFields(token);
+      if (token) {
+        markChecklistStep("bridge");
+        syncFirstRunBridgeUi(true);
+      } else {
+        syncFirstRunBridgeUi(false);
+      }
+      if (window.DealQuillGrok) DealQuillGrok.saveTokenAsync(token, pingBridge);
+    }
+
     if (tokEl) {
       tokEl.addEventListener("change", function () {
-        if (window.DealQuillGrok) DealQuillGrok.saveTokenAsync(tokEl.value.trim(), pingBridge);
+        onBridgeTokenCommit(tokEl.value);
+      });
+    }
+    var tokInline = document.getElementById("bridge-token-inline");
+    if (tokInline) {
+      tokInline.addEventListener("change", function () {
+        onBridgeTokenCommit(tokInline.value);
+      });
+      tokInline.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          onBridgeTokenCommit(tokInline.value);
+        }
       });
     }
   }
@@ -200,16 +254,22 @@
 
 
   Office.onReady(function (info) {
+    renderChecklist();
     bindUi();
+    // Optimistic first-run open until token load resolves (avoids collapsed hunt).
+    syncFirstRunBridgeUi(!!(window.DealQuillGrok && DealQuillGrok.getToken()));
 
     if (window.DealQuillGrok) {
       DealQuillGrok.loadTokenAsync(function (tok) {
-        var el = document.getElementById("bridge-token");
-        if (el && tok) el.value = tok;
+        if (tok) syncBridgeTokenFields(tok);
+        if (tok) markChecklistStep("bridge");
+        syncFirstRunBridgeUi(!!tok);
         var urlEl = document.getElementById("bridge-url");
         if (urlEl) urlEl.value = DealQuillGrok.getBridgeUrl();
         pingBridge();
       });
+    } else {
+      syncFirstRunBridgeUi(false);
     }
 
     if (info.host === Office.HostType.Word) {
