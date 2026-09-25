@@ -12,3 +12,5 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+qa-preview/
+.push-*.json
